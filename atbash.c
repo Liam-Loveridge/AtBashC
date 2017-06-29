@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 
-void Enc(char *inpath, char *outpath)
+void EncF(char *inpath, char *outpath, char call)
 {
     FILE *srcFile = fopen(inpath, "r");
     FILE *snkFile = fopen(outpath, "w");
@@ -58,8 +58,12 @@ void Enc(char *inpath, char *outpath)
         dataE[i] = enc; 
     }
 
-    printf("DECRYPTED DATA: %s \n", dataD); 
-    printf("ENCRYPTED DATA: %s", dataE); 
+    
+    if(call == 'Y')
+    {
+        printf("DECRYPTED DATA: %s \n", dataD); 
+        printf("ENCRYPTED DATA: %s", dataE); 
+    }
 
     //Writes to outpath
     fprintf(snkFile, "%s \n", dataE);
@@ -69,7 +73,7 @@ void Enc(char *inpath, char *outpath)
 
 }
 
-void Dec(char *inpath, char *outpath)
+void DecF(char *inpath, char *outpath, char call)
 {
     FILE *srcFile = fopen(inpath, "r");
     FILE *snkFile = fopen(outpath, "w");
@@ -85,7 +89,6 @@ void Dec(char *inpath, char *outpath)
     char ralphaU[26] = {'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M', 'L', 'K', 'J', 'I', 'H', 'G', 'F', 'E', 'D', 'C', 'B', 'A'};
     char ralphaL[26] = {'z', 'y', 'x', 'w', 'v', 'u', 't', 's', 'r', 'q', 'p', 'o', 'n', 'm', 'l', 'k', 'j', 'i', 'h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'};
 
-    char dec;
     int n, i; 
 
     for(i = 0; i < (strlen(dataE)); i++)
@@ -99,7 +102,7 @@ void Dec(char *inpath, char *outpath)
                 n++;
             }
 
-            dec = alphaU[n]; 
+            dataD[i] = alphaU[n]; 
         }
         else
         {
@@ -111,20 +114,20 @@ void Dec(char *inpath, char *outpath)
                     n++;
                 }
 
-                dec = alphaL[n]; 
+                dataD[i] = alphaL[n]; 
             }
             else
             {
-                dec = dataE[i];
+                dataD[i] = dataE[i];
             }
         }
-
-        dataD[i] = dec; 
     }
 
-
-    printf("ENCRYPTED DATA: %s \n", dataE); 
-    printf("DECRYPTED DATA: %s \n", dataD); 
+    if(call == 'Y')
+    {
+        printf("ENCRYPTED DATA: %s \n", dataE); 
+        printf("DECRYPTED DATA: %s \n", dataD); 
+    }
 
     //Writes to outpath
     fprintf(snkFile, "%s", dataD);
@@ -132,6 +135,108 @@ void Dec(char *inpath, char *outpath)
     fclose(srcFile);
     fclose(snkFile);
 
+}
+
+//Modules without using a file 
+void Enc(char *DataD, char *DataE, char call)
+{
+
+    char alphaU[26] = {'A','B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U','V','W', 'X', 'Y', 'Z'};
+    char alphaL[26] = {'a','b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u','v','w', 'x', 'y', 'z'};
+
+    char ralphaU[26] = {'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M', 'L', 'K', 'J', 'I', 'H', 'G', 'F', 'E', 'D', 'C', 'B', 'A'};
+    char ralphaL[26] = {'z', 'y', 'x', 'w', 'v', 'u', 't', 's', 'r', 'q', 'p', 'o', 'n', 'm', 'l', 'k', 'j', 'i', 'h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'};
+
+    int n, i; 
+
+    for(i = 0; i < (strlen(dataD)); i++)
+    {   
+        n = 0; 
+        if(dataD[i] >= 65 && dataD[i] <= 90)
+        {
+            //Linear search for index
+            while(alphaU[n] != dataD[i])
+            {
+                n++;
+            }
+
+            dataE[i] = ralphaU[n]; 
+        }
+        else
+        {
+            if(dataD[i] >= 97 && dataD[i] <= 122)
+            {
+                //Linear search for index
+                while(alphaL[n] != dataD[i])
+                {
+                    n++;
+                }
+
+                 dataE[i] = ralphaL[n]; 
+            }
+            else
+            {
+                 dataE[i] = dataD[i];
+            }
+    
+        }
+    }
+
+    if(call == 'Y')
+    {
+        printf("DECRYPTED DATA: %s \n", dataD); 
+        printf("ENCRYPTED DATA: %s", dataE);
+    }
+}
+
+void DecF(char *DataD, char *DataE, char call)
+{
+    char alphaU[26] = {'A','B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U','V','W', 'X', 'Y', 'Z'};
+    char alphaL[26] = {'a','b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u','v','w', 'x', 'y', 'z'};
+
+    char ralphaU[26] = {'Z', 'Y', 'X', 'W', 'V', 'U', 'T', 'S', 'R', 'Q', 'P', 'O', 'N', 'M', 'L', 'K', 'J', 'I', 'H', 'G', 'F', 'E', 'D', 'C', 'B', 'A'};
+    char ralphaL[26] = {'z', 'y', 'x', 'w', 'v', 'u', 't', 's', 'r', 'q', 'p', 'o', 'n', 'm', 'l', 'k', 'j', 'i', 'h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'};
+
+    int n, i; 
+
+    for(i = 0; i < (strlen(dataE)); i++)
+    {   
+        n = 0; 
+        if(dataE[i] >= 65 && dataE[i] <= 90)
+        {
+            //Linear search for index
+            while(ralphaU[n] != dataE[i])
+            {
+                n++;
+            }
+
+            dataD[i] = alphaU[n]; 
+        }
+        else
+        {
+            if(dataE[i] >= 97 && dataE[i] <= 122)
+            {
+                //Linear search for index
+                while(ralphaL[n] != dataE[i])
+                {
+                    n++;
+                }
+
+                dataD[i] = alphaL[n]; 
+            }
+            else
+            {
+                dataD[i] = dataE[i];
+            }
+        }
+    }
+
+    if(call == 'Y')
+    {
+        printf("ENCRYPTED DATA: %s \n", dataE); 
+        printf("DECRYPTED DATA: %s \n", dataD); 
+    }
+  
 }
 
 int main() 
