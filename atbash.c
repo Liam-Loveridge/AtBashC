@@ -240,82 +240,199 @@ void Dec(char *dataE, char *dataD, char call)
   
 }
 
-int main() 
+int main(int argc, char *argv[]) 
 {
     char ch, r;
     char call = 'N'; 
     char in[128] = {'\0'};
     char out[128] = {'\0'};
 
-    //Needs to be rewritten (THE WHOLE FUNCTON)
-    printf("Welcome to the Atbash Program. You can encrypt and decrypt files that use the Atbash cipher! \n"); 
+    int i; 
+    int off = 0; 
     
-    jump: 
-    printf("Would you like to read and write to files? (Y for Yes or N for No): ");
-    scanf("%c%*c", &r);
-    r = toupper(r);
-
-    if(r == 'Y')
+    if(argc == 1)
     {
-        printf("Would you like to encrypt or decrypt your file? (Type e for encrypt or d for decrypt): "); 
-        scanf("%c%*c", &ch);    
+        printf("Welcome to the Atbash Program. You can encrypt and decrypt files that use the Atbash cipher! \n"); 
+        
+        jump: 
+        printf("Would you like to read and write to files? (Y for Yes or N for No): ");
+        scanf("%c%*c", &r);
+        r = toupper(r);
 
-        printf("What is the name of the file in which you want to either encrypt or decrypt? (You must name the path if not executed inside the same folder as the program): ");
-        fgets(in, 128, stdin);
-        in[(strlen(in)- 1)] = '\0';
-
-        printf("What is the name of the file in which you want the encrypted or decrypted data to go? (You must name the path if not executed inside the same folder as the program): ");
-        fgets(out, 128, stdin);
-        out[(strlen(out)- 1)] = '\0';  
-
-        printf("Would you like to see the message in the console after the program has done it's magic? (Y for Yes or N for No): ");
-        scanf("%c%*c", &call);
-        call = toupper(call);
-
-        if(ch == 'd')
+        if(r == 'Y')
         {
-            DecF(in, out, call);
+            printf("Would you like to encrypt or decrypt your file? (Type e for encrypt or d for decrypt): "); 
+            scanf("%c%*c", &ch);    
+            ch = tolower(ch);
+
+            printf("What is the name of the file in which you want to either encrypt or decrypt? (You must name the path if not executed inside the same folder as the program): ");
+            fgets(in, 128, stdin);
+            in[(strlen(in)- 1)] = '\0';
+
+            printf("What is the name of the file in which you want the encrypted or decrypted data to go? (You must name the path if not executed inside the same folder as the program): ");
+            fgets(out, 128, stdin);
+            out[(strlen(out)- 1)] = '\0';  
+
+            printf("Would you like to see the message in the console after the program has done it's magic? (Y for Yes or N for No): ");
+            scanf("%c%*c", &call);
+            call = toupper(call);   
         }
         else
         {
-            if(ch == 'e')
+            if(r == 'N')
             {
-                EncF(in, out, call);
+                printf("Please enter your message: ");
+                fgets(in, 128, stdin);
+                in[(strlen(in)-1)] = '\0';
+
+                printf("Would you like to encrypt or decrypt this message. (Press e to encrypt or d to decrypt): ");
+                scanf("%c%*c", &ch); 
+                ch = tolower(ch); 
+
+                call = 'Y'; 
+
+                off = 1; 
             }
-        }    
+            else
+            {
+                printf("You haven't entered in the correct type: TRY AGAIN!"); 
+                goto jump;
+            }
+
+        }
     }
-    else
+
+    //For the CMD line arguments 
+
+    for(i = 0; i < argc; i++)
     {
+        //Need if-else statements due to '-' in the cmdline arguments 
+
+        if(strcmp(argv[i], "-d") == 0)
+        {
+            ch = 'd';
+        }
+        else
+        {
+            if(strcmp(argv[i], "-e") == 0)
+            {
+                ch = 'e';
+            }
+            else 
+            {
+                if(strcmp(argv[i], "-f") == 0)
+                {
+                    strcpy(in, argv[i + 1]); 
+                    strcpy(out, argv[i + 2]); 
+                }
+                else
+                {
+                    if(strcmp(argv[i], "-c") == 0)
+                    {
+                        call = 'Y'; 
+                    }
+                    else 
+                    {
+                        if(strcmp(argv[i], "-o") == 0)
+                        {
+                            printf("Please enter your message: ");
+                            fgets(in, 128, stdin);
+                            in[(strlen(in)-1)] = '\0';
+                            call = 'Y'; 
+                            off = 1; 
+                        }
+                        else
+                        {
+                             if(strcmp(argv[i], "-h") == 0)
+                            {
+                                printf("HELP MODE: \n");
+                                printf("Encrypt [-e] \n");
+                                printf("Decrypt [-d] \n"); 
+                                printf("Transfer to file [-f Source Destination] \n");
+                                printf("To print the results in the console [-c] \n"); 
+                                printf("To not use files [-o] \n");
+                                printf("Help [-h] \n"); 
+                            }
+                        }
+                    }
+                }
+            }  
+        }
+    }
+
+    // Validation
+
+    if(ch == '\0')
+    {
+        printf("Would you like to encrypt or decrypt your file? (Type e for encrypt or d for decrypt): "); 
+        scanf("%c%*c", &ch);
+        ch = tolower(ch); 
+    }
+
+    jump1:
+    if(!(in[0]))
+    {
+        printf("Would you like to use files? (Y for Yes and N for No): ");
+        scanf("%c%*c", &r); 
+        r = toupper(r);
+
         if(r == 'N')
         {
             printf("Please enter your message: ");
             fgets(in, 128, stdin);
             in[(strlen(in)-1)] = '\0';
-
-            printf("Would you like to encrypt or decrypt this message. (Press e to encrypt or d to decrypt): ");
-            scanf("%c%*c", &ch); 
-            call = 'Y'; 
-
-            if(ch == 'd')
+            off = 1; 
+        }
+        else 
+        {
+            if(r == 'Y')
             {
-                Dec(in, out, call);
+                printf("What is the name of the file in which you want to either encrypt or decrypt? (You must name the path if not executed inside the same folder as the program): ");
+                fgets(in, 128, stdin);
+                in[(strlen(in)- 1)] = '\0';
+
+                if(!(out[0]))
+                {
+                    printf("What is the name of the file in which you want the encrypted or decrypted data to go? (You must name the path if not executed inside the same folder as the program): ");
+                    fgets(out, 128, stdin);
+                    out[(strlen(out)- 1)] = '\0'; 
+                }
             }
             else
             {
-                if(ch == 'e')
-                {
-                    Enc(in, out, call);
-                }
+                printf("ERROR: Incorrect response. Please try again! \n");
+                goto jump1; 
             }
+        }
+    }
+    
+
+    //To actually call the functions
+
+    if(off == 1)
+    {
+        if(ch == 'e')
+        {
+            Enc(in, out, call); 
         }
         else
         {
-            printf("You haven't entered in the correct type: TRY AGAIN!"); 
-            goto jump;
+           Dec(in, out, call);  
         }
-
+    }
+    else 
+    {
+        if(ch == 'e')
+        {
+            EncF(in, out, call);
+        }
+        else 
+        {
+            DecF(in, out, call); 
+        }
     }
 
+    
   
 
     return 0; 
